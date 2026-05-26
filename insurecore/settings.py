@@ -61,7 +61,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'insurance_system',
         'USER': 'root',
-        'PASSWORD': '**@@2006',
+        'PASSWORD': 'your password',
          'HOST': 'localhost',
          'PORT': '3306',
      }
