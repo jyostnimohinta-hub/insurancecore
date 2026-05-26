@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — InsureCore</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563eb;--border:#e5e7eb;--bg:#f7f8fa;--text:#111827;--text-3:#6b7280;--text-4:#9ca3af;--white:#fff;--red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;--sans:'Plus Jakarta Sans',sans-serif;--radius:8px;--radius-lg:12px;}
+body{font-family:var(--sans);background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.wrap{width:100%;max-width:440px}
+.brand{text-align:center;margin-bottom:24px}
+.brand-icon{width:48px;height:48px;background:var(--blue);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px}
+.brand-name{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.brand-sub{font-size:12px;color:var(--text-3);margin-top:3px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px}
+.card-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.card-sub{font-size:12px;color:var(--text-3);margin-bottom:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.field{margin-bottom:14px}
+label{display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:var(--sans);color:var(--text);outline:none;transition:border-color .15s}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+input::placeholder{color:var(--text-4)}
+.error-box{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);border-radius:var(--radius);padding:10px 12px;font-size:13px;margin-bottom:14px}
+.btn-reg{width:100%;padding:11px;background:var(--blue);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;margin-top:4px}
+.btn-reg:hover{background:#1d4ed8}
+.links{text-align:center;margin-top:14px;font-size:12px;color:var(--text-3)}
+.links a{color:var(--blue);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-icon">🛡</div>
+    <div class="brand-name">InsureCore</div>
+    <div class="brand-sub">Create Customer Account</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Register</div>
+    <div class="card-sub">Create your customer portal account</div>
+    {% if error %}<div class="error-box">⚠ {{ error }}</div>{% endif %}
+    <form method="POST">
+      {% csrf_token %}
+      <div class="grid">
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" name="name" placeholder="Your full name" required>
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input type="text" name="phone" placeholder="Phone number" required>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="Email address" required>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Choose a username" required>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" name="password1" placeholder="Password" required>
+        </div>
+        <div class="field">
+          <label>Confirm Password</label>
+          <input type="password" name="password2" placeholder="Confirm password" required>
+        </div>
+      </div>
+      <button type="submit" class="btn-reg">Create Account →</button>
+    </form>
+    <div class="links">
+      Already have an account? <a href="{% url 'customer_login' %}">Sign in</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

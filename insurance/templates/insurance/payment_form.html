@@ -1,0 +1,56 @@
+{% extends "insurance/base.html" %}
+{% block title %}{{ title }} — InsureCore{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div style="max-width:580px">
+  <div style="margin-bottom:20px">
+    <a href="{% url 'payments' %}" class="btn btn-secondary btn-sm">← Back to Payments</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">{{ title }}</span></div>
+    <div class="card-body">
+      <form method="POST">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-error">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-grid">
+          <div class="field" style="grid-column:1/-1">
+            <label>Policy</label>
+            {{ form.policy }}
+          </div>
+          <div class="field">
+            <label>Amount (₹)</label>
+            {{ form.amount }}
+          </div>
+          <div class="field">
+            <label>Status</label>
+            {{ form.status }}
+          </div>
+          <div class="field">
+            <label>Due Date</label>
+            {{ form.due_date }}
+          </div>
+          <div class="field">
+            <label>Paid Date</label>
+            {{ form.paid_date }}
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label>Transaction ID</label>
+            {{ form.transaction_id }}
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <button type="submit" class="btn btn-primary">Save Payment</button>
+          <a href="{% url 'payments' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

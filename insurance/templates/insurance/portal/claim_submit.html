@@ -1,0 +1,44 @@
+{% extends "insurance/portal/base.html" %}
+{% block title %}Submit Claim — InsureCore{% endblock %}
+{% block page_title %}Submit New Claim{% endblock %}
+{% block content %}
+<div style="max-width:540px">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Submit a Claim</span></div>
+    <div class="card-body">
+      {% if success %}<div class="alert alert-success">✓ {{ success }}</div>{% endif %}
+      {% if error %}<div class="alert alert-error">⚠ {{ error }}</div>{% endif %}
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="field">
+          <label>Select Policy</label>
+          <select name="policy" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:var(--sans);outline:none">
+            {% for p in policies %}
+            <option value="{{ p.pk }}">{{ p.policy_number }} — {{ p.get_policy_type_display }}</option>
+            {% empty %}
+            <option>No active policies</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>Incident Date</label>
+          <input type="date" name="incident_date" class="form-input" required>
+        </div>
+        <div class="field">
+          <label>Claim Amount (₹)</label>
+          <input type="number" name="claim_amount" class="form-input" placeholder="Enter amount" required>
+        </div>
+        <div class="field">
+          <label>Reason for Claim</label>
+          <textarea name="reason" rows="4" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:var(--sans);outline:none;resize:vertical" placeholder="Describe the incident..." required></textarea>
+        </div>
+        <div class="field">
+          <label>Supporting Document (Optional)</label>
+          <input type="file" name="document" accept=".pdf,.jpg,.png">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Claim →</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

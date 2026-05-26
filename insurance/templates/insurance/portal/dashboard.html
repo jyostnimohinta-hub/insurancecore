@@ -1,0 +1,114 @@
+{% extends "insurance/portal/base.html" %}
+{% block title %}My Dashboard — InsureCore{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+{% block content %}
+
+<div style="margin-bottom:20px">
+  <div style="font-size:20px;font-weight:700">Welcome back, {{ customer.name }} 👋</div>
+  <div style="font-size:13px;color:var(--text-3);margin-top:4px">Here is a summary of your insurance account</div>
+</div>
+
+{% if expiring %}
+<div class="alert alert-warning" style="margin-bottom:16px">
+  ⏰ <strong>{{ expiring.count }} policy/policies expiring within 30 days.</strong> Please contact your agent for renewal.
+</div>
+{% endif %}
+
+{% if payments %}
+<div class="alert alert-error" style="margin-bottom:16px">
+  💳 <strong>{{ payments.count }} payment(s) pending.</strong> Please pay before the due date to keep your policy active.
+</div>
+{% endif %}
+
+<div class="kpi-grid">
+  <div class="kpi blue">
+    <div class="kpi-label">My Policies</div>
+    <div class="kpi-value">{{ policies.count }}</div>
+  </div>
+  <div class="kpi green">
+    <div class="kpi-label">Total Claims</div>
+    <div class="kpi-value">{{ claims.count }}</div>
+  </div>
+  <div class="kpi amber">
+    <div class="kpi-label">Pending Payments</div>
+    <div class="kpi-value">{{ payments.count }}</div>
+  </div>
+  <div class="kpi red">
+    <div class="kpi-label">Expiring Soon</div>
+    <div class="kpi-value">{{ expiring.count }}</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">My Policies</span>
+      <a href="{% url 'customer_portal_policies' %}" style="font-size:12px;color:var(--blue);text-decoration:none">View all →</a>
+    </div>
+    <table class="data">
+      <thead><tr><th>Policy #</th><th>Type</th><th>Expires</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for p in policies|slice:":4" %}
+        <tr>
+          <td style="font-family:monospace;font-size:12px">{{ p.policy_number }}</td>
+          <td>{{ p.get_policy_type_display }}</td>
+          <td>{{ p.end_date }}</td>
+          <td><span class="badge badge-{{ p.status }}">{{ p.get_status_display }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-4)">No policies yet. Contact your agent.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Recent Claims</span>
+      <a href="{% url 'customer_portal_claims' %}" style="font-size:12px;color:var(--blue);text-decoration:none">View all →</a>
+    </div>
+    <table class="data">
+      <thead><tr><th>Claim #</th><th>Amount</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for c in claims|slice:":4" %}
+        <tr>
+          <td style="font-family:monospace;font-size:12px">{{ c.claim_number }}</td>
+          <td>₹{{ c.claim_amount|floatformat:0 }}</td>
+          <td><span class="badge badge-{{ c.status }}">{{ c.get_status_display }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" style="text-align:center;padding:20px;color:var(--text-4)">No claims submitted yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if payments %}
+<div class="card">
+  <div class="card-header">
+    <span class="card-title" style="color:var(--red)">⚠ Due Payments</span>
+    <a href="{% url 'customer_portal_payments' %}" style="font-size:12px;color:var(--blue);text-decoration:none">View all →</a>
+  </div>
+  <table class="data">
+    <thead><tr><th>Policy</th><th>Type</th><th>Amount</th><th>Due Date</th></tr></thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td style="font-family:monospace;font-size:12px">{{ p.policy.policy_number }}</td>
+        <td>{{ p.policy.get_policy_type_display }}</td>
+        <td>₹{{ p.amount|floatformat:0 }}</td>
+        <td style="color:var(--red);font-weight:600">{{ p.due_date }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div style="margin-top:16px;text-align:center">
+  <a href="{% url 'customer_portal_claim_submit' %}" class="btn btn-primary" style="padding:12px 28px;font-size:14px">
+    ➕ Submit a New Claim
+  </a>
+</div>
+{% endblock %}

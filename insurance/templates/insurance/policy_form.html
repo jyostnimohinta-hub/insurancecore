@@ -1,0 +1,65 @@
+{% extends "insurance/base.html" %}
+{% block title %}{{ title }} — InsureCore{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div style="max-width:580px">
+  <div style="margin-bottom:20px">
+    <a href="{% url 'policies' %}" class="btn btn-secondary btn-sm">← Back to Policies</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">{{ title }}</span></div>
+    <div class="card-body">
+      <form method="POST">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-error">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-grid">
+          <div class="field" style="grid-column:1/-1">
+            <label>Customer</label>
+            {{ form.customer }}
+            {% if form.customer.errors %}<div style="color:var(--red);font-size:12px;margin-top:4px">{{ form.customer.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="field">
+            <label>Policy Type</label>
+            {{ form.policy_type }}
+          </div>
+          <div class="field">
+            <label>Cover Amount (₹)</label>
+            {{ form.cover_amount }}
+          </div>
+          <div class="field">
+            <label>Premium Amount (₹)</label>
+            {{ form.premium_amount }}
+          </div>
+          <div class="field">
+            <label>Start Date</label>
+            {{ form.start_date }}
+          </div>
+          <div class="field">
+            <label>End Date</label>
+            {{ form.end_date }}
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label>Description</label>
+            {{ form.description }}
+          </div>
+        </div>
+
+        <div style="background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--blue)">
+          💡 Policy number will be auto-generated (e.g. POL-A1B2C3D4)
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <button type="submit" class="btn btn-primary">Save Policy</button>
+          <a href="{% url 'policies' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

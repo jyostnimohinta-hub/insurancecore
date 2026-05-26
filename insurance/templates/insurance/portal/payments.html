@@ -1,0 +1,54 @@
+{% extends "insurance/portal/base.html" %}
+{% block title %}My Payments — InsureCore{% endblock %}
+{% block page_title %}My Payments{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="table-wrap" style="overflow-x:auto">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Policy</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Due Date</th>
+          <th>Paid Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td style="font-family:monospace;font-size:12px">{{ p.policy.policy_number }}</td>
+          <td>{{ p.policy.get_policy_type_display }}</td>
+          <td>₹{{ p.amount|floatformat:0 }}</td>
+          <td style="{% if p.status == 'pending' and p.due_date <= today %}color:var(--red);font-weight:600{% elif p.status == 'pending' %}color:var(--amber);font-weight:600{% endif %}">
+            {{ p.due_date }}
+            {% if p.status == 'pending' and p.due_date <= today %}
+            <span style="font-size:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);padding:1px 6px;border-radius:10px;margin-left:4px">OVERDUE</span>
+            {% endif %}
+          </td>
+          <td>{{ p.paid_date|default:"—" }}</td>
+          <td><span class="badge badge-{{ p.status }}">{{ p.get_status_display }}</span></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6">
+            <div style="text-align:center;padding:40px;color:var(--text-4)">
+              <div style="font-size:32px;margin-bottom:10px">💳</div>
+              <p>No payment records found.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if payments %}
+<div style="margin-top:12px;padding:12px 16px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius);font-size:13px;color:var(--amber)">
+  ⚠ Please pay all pending amounts before the due date to keep your policy active. Contact your agent if you need help.
+</div>
+{% endif %}
+{% endblock %}

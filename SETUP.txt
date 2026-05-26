@@ -1,0 +1,18 @@
+# InsureCore — Django Setup Guide
+# Run these commands one by one in your terminal
+
+# 1. Install dependencies
+pip install django pillow
+
+# 2. Run database migrations (creates db.sqlite3 automatically)
+python manage.py makemigrations
+python manage.py migrate
+
+# 3. Create admin user
+python manage.py createsuperuser
+# Enter: username=admin, password=admin123 (or whatever you prefer)
+
+# 4. Start the server
+python manage.py runserver
+
+# 5. Open browser → http://127.0.0.1:8000

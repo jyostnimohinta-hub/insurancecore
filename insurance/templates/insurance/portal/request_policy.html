@@ -1,0 +1,161 @@
+{% extends "insurance/portal/base.html" %}
+{% block title %}Request a Policy — InsureCore{% endblock %}
+{% block page_title %}Request a Policy{% endblock %}
+
+{% block content %}
+<div style="max-width:580px">
+
+  {% if success %}
+  <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-lg);padding:24px;text-align:center;margin-bottom:20px">
+    <div style="font-size:36px;margin-bottom:10px">✅</div>
+    <div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:6px">Request Submitted!</div>
+    <div style="font-size:13px;color:var(--text-3)">{{ success }}</div>
+    <a href="{% url 'customer_browse_plans' %}" style="display:inline-block;margin-top:16px;padding:8px 20px;background:var(--green);color:white;border-radius:var(--radius);font-size:13px;font-weight:600;text-decoration:none">View My Requests →</a>
+  </div>
+  {% endif %}
+
+  <!-- Info Banner -->
+  <div style="background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start">
+    <div style="font-size:22px">ℹ️</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--blue);margin-bottom:4px">How this works</div>
+      <div style="font-size:12px;color:var(--text-3);line-height:1.6">
+        Select your preferred policy type, cover amount, and payment plan below. Our team will review your request and activate your policy within 1-2 business days. You will receive an email notification once approved.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Policy Request Form</span></div>
+    <div class="card-body">
+
+      {% if error %}
+      <div class="alert alert-error">⚠ {{ error }}</div>
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- Policy Type Dropdown -->
+        <div class="field">
+          <label>Insurance Type</label>
+          <select name="policy_type" class="form-input" required onchange="updatePremium()">
+            <option value="">— Select insurance type —</option>
+            <option value="life"    {% if request.POST.policy_type == 'life' %}selected{% endif %}>❤️  Life Insurance</option>
+            <option value="health"  {% if request.POST.policy_type == 'health' %}selected{% endif %}>🏥  Health Insurance</option>
+            <option value="vehicle" {% if request.POST.policy_type == 'vehicle' %}selected{% endif %}>🚗  Vehicle Insurance</option>
+            <option value="home"    {% if request.POST.policy_type == 'home' %}selected{% endif %}>🏠  Home Insurance</option>
+            <option value="travel"  {% if request.POST.policy_type == 'travel' %}selected{% endif %}>✈️  Travel Insurance</option>
+          </select>
+        </div>
+
+        <!-- Plan info cards shown dynamically -->
+        <div id="plan-info" style="display:none;margin-bottom:16px">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+            <div style="font-size:12px;font-weight:600;color:var(--text-3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">What's Covered</div>
+            <div id="plan-features" style="font-size:12px;color:var(--text-2);line-height:1.8"></div>
+          </div>
+        </div>
+
+        <!-- Cover Amount -->
+        <div class="field">
+          <label>Cover Amount (₹)</label>
+          <select name="requested_cover" class="form-input" required onchange="updatePremium()">
+            <option value="">— Select cover amount —</option>
+            <option value="100000"  {% if request.POST.requested_cover == '100000' %}selected{% endif %}>₹1,00,000 — 1 Lakh</option>
+            <option value="500000"  {% if request.POST.requested_cover == '500000' %}selected{% endif %}>₹5,00,000 — 5 Lakh</option>
+            <option value="1000000" {% if request.POST.requested_cover == '1000000' %}selected{% endif %}>₹10,00,000 — 10 Lakh</option>
+            <option value="2500000" {% if request.POST.requested_cover == '2500000' %}selected{% endif %}>₹25,00,000 — 25 Lakh</option>
+            <option value="5000000" {% if request.POST.requested_cover == '5000000' %}selected{% endif %}>₹50,00,000 — 50 Lakh</option>
+            <option value="10000000" {% if request.POST.requested_cover == '10000000' %}selected{% endif %}>₹1,00,00,000 — 1 Crore</option>
+          </select>
+        </div>
+
+        <!-- Payment Plan Dropdown -->
+        <div class="field">
+          <label>Payment Plan</label>
+          <select name="payment_plan" class="form-input" required onchange="updatePremium()">
+            <option value="">— Select payment frequency —</option>
+            <option value="monthly"    {% if request.POST.payment_plan == 'monthly' %}selected{% endif %}>📅  Monthly — Pay every month</option>
+            <option value="quarterly"  {% if request.POST.payment_plan == 'quarterly' %}selected{% endif %}>📅  Quarterly — Pay every 3 months</option>
+            <option value="halfyearly" {% if request.POST.payment_plan == 'halfyearly' %}selected{% endif %}>📅  Half Yearly — Pay every 6 months</option>
+            <option value="yearly"     {% if request.POST.payment_plan == 'yearly' %}selected{% endif %}>📅  Yearly — Pay once a year</option>
+          </select>
+        </div>
+
+        <!-- Estimated Premium Box -->
+        <div id="premium-box" style="display:none;background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px">
+          <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Estimated Premium</div>
+          <div id="premium-amount" style="font-size:24px;font-weight:800;color:var(--green);letter-spacing:-0.5px"></div>
+          <div id="premium-sub" style="font-size:11px;color:var(--text-3);margin-top:2px"></div>
+        </div>
+
+        <!-- Additional Message -->
+        <div class="field">
+          <label>Additional Message (Optional)</label>
+          <textarea name="message" class="form-input" rows="3"
+            placeholder="Any specific requirements, existing conditions, or questions for our team...">{{ request.POST.message }}</textarea>
+        </div>
+
+        <!-- Terms note -->
+        <div style="font-size:11px;color:var(--text-4);margin-bottom:16px;line-height:1.6">
+          By submitting this request, you agree that our team will review your details and contact you if additional information is needed. The final premium may vary based on your profile.
+        </div>
+
+        {% if not success %}
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:13px;font-size:15px">
+          Submit Policy Request →
+        </button>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const planFeatures = {
+  life: ['Death benefit to nominee', 'Cover up to ₹1 Crore', 'Tax benefits under 80C', 'Term options: 10-40 years'],
+  health: ['Cashless hospitalisation', 'Pre & post hospitalisation cover', 'Day care procedures', 'Annual health checkup free'],
+  vehicle: ['Third party liability cover', 'Own damage protection', 'Roadside assistance 24/7', 'Cashless garage network'],
+  home: ['Structure damage cover', 'Contents & valuables cover', 'Fire and flood protection', 'Theft and burglary cover'],
+  travel: ['Medical emergency abroad', 'Trip cancellation cover', 'Baggage loss protection', 'Flight delay compensation'],
+};
+
+const premiumRates = { life: 0.004, health: 0.006, vehicle: 0.008, home: 0.003, travel: 0.005 };
+const paymentDivisor = { monthly: 12, quarterly: 4, halfyearly: 2, yearly: 1 };
+const paymentLabel = { monthly: 'per month', quarterly: 'per quarter', halfyearly: 'per 6 months', yearly: 'per year' };
+
+function updatePremium() {
+  const type = document.querySelector('[name="policy_type"]').value;
+  const cover = parseFloat(document.querySelector('[name="requested_cover"]').value);
+  const plan = document.querySelector('[name="payment_plan"]').value;
+
+  // Show features
+  const infoBox = document.getElementById('plan-info');
+  const featuresDiv = document.getElementById('plan-features');
+  if (type && planFeatures[type]) {
+    featuresDiv.innerHTML = planFeatures[type].map(f => `✓ ${f}`).join('<br>');
+    infoBox.style.display = 'block';
+  } else {
+    infoBox.style.display = 'none';
+  }
+
+  // Show estimated premium
+  const premiumBox = document.getElementById('premium-box');
+  if (type && cover && plan && premiumRates[type]) {
+    const yearlyPremium = cover * premiumRates[type];
+    const periodPremium = yearlyPremium / paymentDivisor[plan];
+    document.getElementById('premium-amount').textContent = '₹' + Math.round(periodPremium).toLocaleString('en-IN');
+    document.getElementById('premium-sub').textContent = `Estimated ${paymentLabel[plan]} · ₹${Math.round(yearlyPremium).toLocaleString('en-IN')} yearly`;
+    premiumBox.style.display = 'block';
+  } else {
+    premiumBox.style.display = 'none';
+  }
+}
+
+// Run on page load in case form was submitted with values
+window.onload = updatePremium;
+</script>
+{% endblock %}

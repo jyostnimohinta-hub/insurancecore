@@ -1,0 +1,78 @@
+{% extends "insurance/base.html" %}
+{% block title %}{{ customer.name }} — InsureCore{% endblock %}
+{% block page_title %}Customer Profile{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+  <a href="{% url 'customers' %}" class="btn btn-secondary btn-sm">← Back</a>
+  <a href="{% url 'customer_edit' customer.pk %}" class="btn btn-primary btn-sm">Edit Customer</a>
+</div>
+
+<div class="two-col" style="margin-bottom:16px">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Personal Details</span></div>
+    <div class="card-body">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--blue);flex-shrink:0">
+          {{ customer.name|first|upper }}
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:700">{{ customer.name }}</div>
+          <div style="font-size:12px;color:var(--text-3)">Customer since {{ customer.created_at|date:"M Y" }}</div>
+        </div>
+      </div>
+      <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">{{ customer.email }}</span></div>
+      <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value mono">{{ customer.phone }}</span></div>
+      <div class="detail-row"><span class="detail-label">Date of Birth</span><span class="detail-value">{{ customer.date_of_birth|default:"—" }}</span></div>
+      <div class="detail-row"><span class="detail-label">Gender</span><span class="detail-value">{{ customer.get_gender_display }}</span></div>
+      <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">{{ customer.address|default:"—" }}</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Policies ({{ policies.count }})</span>
+      <a href="{% url 'policy_add' %}" class="btn btn-primary btn-sm">+ Add Policy</a>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Policy #</th><th>Type</th><th>Expires</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for p in policies %}
+          <tr>
+            <td><a href="{% url 'policy_detail' p.pk %}" class="mono" style="color:var(--blue);text-decoration:none">{{ p.policy_number }}</a></td>
+            <td>{{ p.get_policy_type_display }}</td>
+            <td>{{ p.end_date }}</td>
+            <td><span class="badge badge-{{ p.status }}">{{ p.get_status_display }}</span></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="text-align:center;color:var(--text-4);padding:20px">No policies</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="card-title">Claims History</span></div>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Claim #</th><th>Policy</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for c in claims %}
+        <tr>
+          <td><a href="{% url 'claim_detail' c.pk %}" class="mono" style="color:var(--blue);text-decoration:none">{{ c.claim_number }}</a></td>
+          <td class="mono">{{ c.policy.policy_number }}</td>
+          <td class="amount">₹{{ c.claim_amount|floatformat:0 }}</td>
+          <td>{{ c.claim_date }}</td>
+          <td><span class="badge badge-{{ c.status }}">{{ c.get_status_display }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;color:var(--text-4);padding:20px">No claims</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

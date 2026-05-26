@@ -1,0 +1,25 @@
+{% extends "insurance/portal/base.html" %}
+{% block title %}My Policies — InsureCore{% endblock %}
+{% block page_title %}My Policies{% endblock %}
+{% block content %}
+<div class="card">
+  <table class="data">
+    <thead><tr><th>Policy #</th><th>Type</th><th>Cover</th><th>Premium</th><th>Start</th><th>Expires</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for p in policies %}
+      <tr>
+        <td style="font-family:monospace;font-size:12px">{{ p.policy_number }}</td>
+        <td>{{ p.get_policy_type_display }}</td>
+        <td>₹{{ p.cover_amount|floatformat:0 }}</td>
+        <td>₹{{ p.premium_amount|floatformat:0 }}</td>
+        <td>{{ p.start_date }}</td>
+        <td>{{ p.end_date }}</td>
+        <td><span class="badge badge-{{ p.status }}">{{ p.get_status_display }}</span></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-4)">No policies assigned yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

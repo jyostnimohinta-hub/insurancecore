@@ -1,0 +1,190 @@
+{% extends "insurance/base.html" %}
+{% block title %}Dashboard — InsureCore{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="kpi-grid">
+  <div class="kpi blue">
+    <div class="kpi-icon">👤</div>
+    <div class="kpi-label">Total Customers</div>
+    <div class="kpi-value">{{ stats.customers }}</div>
+    <div class="kpi-sub">Registered accounts</div>
+  </div>
+  <div class="kpi green">
+    <div class="kpi-icon">📄</div>
+    <div class="kpi-label">Active Policies</div>
+    <div class="kpi-value">{{ stats.policies }}</div>
+    <div class="kpi-sub">Currently active</div>
+  </div>
+  <div class="kpi amber">
+    <div class="kpi-icon">📋</div>
+    <div class="kpi-label">Pending Claims</div>
+    <div class="kpi-value">{{ stats.pending_claims }}</div>
+    <div class="kpi-sub">Awaiting review</div>
+  </div>
+  <div class="kpi red">
+    <div class="kpi-icon">💳</div>
+    <div class="kpi-label">Due Payments</div>
+    <div class="kpi-value">{{ stats.due_payments }}</div>
+    <div class="kpi-sub">Next 7 days</div>
+  </div>
+  <div class="kpi purple">
+    <div class="kpi-icon">⏰</div>
+    <div class="kpi-label">Expiring Soon</div>
+    <div class="kpi-value">{{ stats.expiring_policies }}</div>
+    <div class="kpi-sub">Within 30 days</div>
+  </div>
+  <div class="kpi blue">
+    <div class="kpi-icon">🛡</div>
+    <div class="kpi-label">Total Cover</div>
+    <div class="kpi-value" style="font-size:18px">₹{{ stats.total_cover|floatformat:0 }}</div>
+    <div class="kpi-sub">Active policy cover</div>
+  </div>
+</div>
+
+<div class="two-col" style="margin-bottom:16px">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Claims (Last 6 Months)</span>
+    </div>
+    <div class="card-body">
+      <canvas id="claimsChart" height="160"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Policy Distribution</span>
+    </div>
+    <div class="card-body" style="display:flex;align-items:center;justify-content:center">
+      <canvas id="policyChart" height="160" style="max-width:220px"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Recent Claims</span>
+      <a href="{% url 'claims' %}" class="btn btn-secondary btn-sm">View all</a>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Claim #</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for c in recent_claims %}
+          <tr>
+            <td><a href="{% url 'claim_detail' c.pk %}" class="mono" style="color:var(--blue);text-decoration:none">{{ c.claim_number }}</a></td>
+            <td>{{ c.policy.customer.name }}</td>
+            <td class="amount">₹{{ c.claim_amount|floatformat:0 }}</td>
+            <td><span class="badge badge-{{ c.status }}">{{ c.get_status_display }}</span></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4"><div class="empty"><div class="empty-icon">📋</div><p>No claims yet</p></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Due Payments</span>
+      <a href="{% url 'payments' %}" class="btn btn-secondary btn-sm">View all</a>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Policy</th><th>Customer</th><th>Due</th><th>Amount</th></tr></thead>
+        <tbody>
+          {% for p in due_payments %}
+          <tr>
+            <td class="mono">{{ p.policy.policy_number }}</td>
+            <td>{{ p.policy.customer.name }}</td>
+            <td style="color:{% if p.due_date <= today %}var(--red){% else %}var(--amber){% endif %}">{{ p.due_date }}</td>
+            <td class="amount">₹{{ p.amount|floatformat:0 }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4"><div class="empty"><div class="empty-icon">✅</div><p>No due payments</p></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% if expiring %}
+<div class="card" style="margin-top:16px">
+  <div class="card-header">
+    <span class="card-title">⏰ Policies Expiring Within 30 Days</span>
+    <a href="{% url 'policies' %}?status=active" class="btn btn-secondary btn-sm">View all</a>
+  </div>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Policy #</th><th>Customer</th><th>Type</th><th>Expires</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for p in expiring %}
+        <tr>
+          <td class="mono">{{ p.policy_number }}</td>
+          <td>{{ p.customer.name }}</td>
+          <td>{{ p.get_policy_type_display }}</td>
+          <td style="color:var(--red);font-weight:600">{{ p.end_date }}</td>
+          <td><a href="{% url 'policy_detail' p.pk %}" class="btn btn-secondary btn-sm">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+fetch('/chart-data/')
+  .then(r => r.json())
+  .then(data => {
+    new Chart(document.getElementById('claimsChart'), {
+      type: 'bar',
+      data: {
+        labels: data.months,
+        datasets: [{
+          label: 'Claims',
+          data: data.claims,
+          backgroundColor: 'rgba(37,99,235,0.15)',
+          borderColor: '#2563eb',
+          borderWidth: 1.5,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#9ca3af' } },
+          y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 }, color: '#9ca3af' }, beginAtZero: true }
+        }
+      }
+    });
+
+    const colors = ['#2563eb','#16a34a','#d97706','#7c3aed','#dc2626'];
+    new Chart(document.getElementById('policyChart'), {
+      type: 'doughnut',
+      data: {
+        labels: data.policy_types.map(t => t.charAt(0).toUpperCase() + t.slice(1)),
+        datasets: [{
+          data: data.policy_counts,
+          backgroundColor: colors,
+          borderWidth: 2,
+          borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } }
+        },
+        cutout: '60%'
+      }
+    });
+  });
+</script>
+{% endblock %}

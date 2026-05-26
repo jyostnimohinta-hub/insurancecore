@@ -1,0 +1,132 @@
+{% extends "insurance/portal/base.html" %}
+{% block title %}Browse Plans — InsureCore{% endblock %}
+{% block page_title %}Browse Insurance Plans{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+  <div>
+    <div style="font-size:20px;font-weight:700">Insurance Plans</div>
+    <div style="font-size:13px;color:var(--text-3);margin-top:4px">Choose a plan and request it — our team will activate it for you</div>
+  </div>
+  <a href="{% url 'customer_request_policy' %}" class="btn btn-primary" style="padding:10px 20px">
+    + Request a Policy
+  </a>
+</div>
+
+<!-- Plan Cards -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:28px">
+
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+    <div style="padding:20px;background:#fef2f2;border-bottom:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:8px">❤️</div>
+      <div style="font-size:16px;font-weight:700">Life Insurance</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:4px">From ₹500/month</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.8;margin-bottom:16px">
+        ✓ Death benefit to nominee<br>
+        ✓ Cover up to ₹1 Crore<br>
+        ✓ Tax benefits under 80C<br>
+        ✓ Term options: 10–40 years
+      </div>
+      <a href="{% url 'customer_request_policy' %}?type=life" class="btn btn-primary" style="display:block;text-align:center;width:100%">Request Plan →</a>
+    </div>
+  </div>
+
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+    <div style="padding:20px;background:#f0fdf4;border-bottom:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:8px">🏥</div>
+      <div style="font-size:16px;font-weight:700">Health Insurance</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:4px">From ₹800/month</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.8;margin-bottom:16px">
+        ✓ Cashless hospitalisation<br>
+        ✓ Pre & post hospitalisation<br>
+        ✓ Day care procedures<br>
+        ✓ Annual health checkup free
+      </div>
+      <a href="{% url 'customer_request_policy' %}?type=health" class="btn btn-primary" style="display:block;text-align:center;width:100%">Request Plan →</a>
+    </div>
+  </div>
+
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+    <div style="padding:20px;background:#eff6ff;border-bottom:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:8px">🚗</div>
+      <div style="font-size:16px;font-weight:700">Vehicle Insurance</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:4px">From ₹300/month</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.8;margin-bottom:16px">
+        ✓ Third party liability cover<br>
+        ✓ Own damage protection<br>
+        ✓ Roadside assistance 24/7<br>
+        ✓ Cashless garage network
+      </div>
+      <a href="{% url 'customer_request_policy' %}?type=vehicle" class="btn btn-primary" style="display:block;text-align:center;width:100%">Request Plan →</a>
+    </div>
+  </div>
+
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+    <div style="padding:20px;background:#fffbeb;border-bottom:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:8px">🏠</div>
+      <div style="font-size:16px;font-weight:700">Home Insurance</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:4px">From ₹200/month</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.8;margin-bottom:16px">
+        ✓ Structure damage cover<br>
+        ✓ Contents & valuables cover<br>
+        ✓ Fire and flood protection<br>
+        ✓ Theft and burglary cover
+      </div>
+      <a href="{% url 'customer_request_policy' %}?type=home" class="btn btn-primary" style="display:block;text-align:center;width:100%">Request Plan →</a>
+    </div>
+  </div>
+
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+    <div style="padding:20px;background:#f5f3ff;border-bottom:1px solid var(--border)">
+      <div style="font-size:28px;margin-bottom:8px">✈️</div>
+      <div style="font-size:16px;font-weight:700">Travel Insurance</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:4px">From ₹100/month</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.8;margin-bottom:16px">
+        ✓ Medical emergency abroad<br>
+        ✓ Trip cancellation cover<br>
+        ✓ Baggage loss protection<br>
+        ✓ Flight delay compensation
+      </div>
+      <a href="{% url 'customer_request_policy' %}?type=travel" class="btn btn-primary" style="display:block;text-align:center;width:100%">Request Plan →</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- My Requests Table -->
+{% if my_requests %}
+<div class="card">
+  <div class="card-header"><span class="card-title">My Policy Requests</span></div>
+  <table class="data">
+    <thead>
+      <tr><th>Plan</th><th>Cover Amount</th><th>Payment Plan</th><th>Requested On</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for r in my_requests %}
+      <tr>
+        <td>{{ r.get_policy_type_display }}</td>
+        <td>₹{{ r.requested_cover|floatformat:0 }}</td>
+        <td>{{ r.get_payment_plan_display }}</td>
+        <td>{{ r.created_at|date:"d M Y" }}</td>
+        <td>
+          <span class="badge badge-{% if r.status == 'approved' %}active{% elif r.status == 'rejected' %}rejected{% else %}pending{% endif %}">
+            {{ r.get_status_display }}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

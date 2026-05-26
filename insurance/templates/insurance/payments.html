@@ -1,0 +1,58 @@
+{% extends "insurance/base.html" %}
+{% block title %}Payments — InsureCore{% endblock %}
+{% block page_title %}Payments{% endblock %}
+
+{% block content %}
+<div class="page-actions">
+  <div class="page-actions-left">
+    <div class="filter-pills">
+      <a href="{% url 'payments' %}" class="pill {% if not status %}active{% endif %}">All</a>
+      <a href="{% url 'payments' %}?status=pending" class="pill {% if status == 'pending' %}active{% endif %}">Pending</a>
+      <a href="{% url 'payments' %}?status=overdue" class="pill {% if status == 'overdue' %}active{% endif %}">Overdue</a>
+      <a href="{% url 'payments' %}?status=paid" class="pill {% if status == 'paid' %}active{% endif %}">Paid</a>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <a href="{% url 'send_due_reminders' %}" class="btn btn-secondary"
+       onclick="return confirm('Send email reminders to all customers with payments due in 7 days?')">
+      📧 Send Due Reminders
+    </a>
+    <a href="{% url 'payment_add' %}" class="btn btn-primary">+ Add Payment</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>Policy</th><th>Customer</th><th>Amount</th><th>Due Date</th><th>Paid Date</th><th>Transaction ID</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td><a href="{% url 'policy_detail' p.policy.pk %}" class="mono" style="color:var(--blue);text-decoration:none">{{ p.policy.policy_number }}</a></td>
+          <td>{{ p.policy.customer.name }}</td>
+          <td class="amount">₹{{ p.amount|floatformat:0 }}</td>
+          <td style="{% if p.status == 'pending' and p.due_date <= today %}color:var(--red);font-weight:600{% endif %}">{{ p.due_date }}</td>
+          <td>{{ p.paid_date|default:"—" }}</td>
+          <td class="mono" style="font-size:11px;color:var(--text-4)">{{ p.transaction_id|default:"—" }}</td>
+          <td><span class="badge badge-{{ p.status }}">{{ p.get_status_display }}</span></td>
+          <td>
+            {% if p.status == 'pending' or p.status == 'overdue' %}
+            <a href="{% url 'payment_mark_paid' p.pk %}" class="btn btn-success btn-sm">Mark Paid</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">
+          <div class="empty">
+            <div class="empty-icon">💳</div>
+            <p>No payment records. <a href="{% url 'payment_add' %}" style="color:var(--blue)">Add the first one</a>.</p>
+          </div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

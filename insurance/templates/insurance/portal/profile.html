@@ -1,0 +1,38 @@
+{% extends "insurance/portal/base.html" %}
+{% block title %}My Profile — InsureCore{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+<div style="max-width:520px">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header"><span class="card-title">Account Details</span></div>
+    <div class="card-body">
+      <div class="detail-row"><span class="detail-label">Full Name</span><span class="detail-value">{{ customer.name }}</span></div>
+      <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">{{ customer.email }}</span></div>
+      <div class="detail-row"><span class="detail-label">Username</span><span class="detail-value" style="font-family:monospace">{{ request.user.username }}</span></div>
+      <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">{{ customer.phone }}</span></div>
+      <div class="detail-row"><span class="detail-label">Gender</span><span class="detail-value">{{ customer.get_gender_display }}</span></div>
+      <div class="detail-row"><span class="detail-label">Member Since</span><span class="detail-value">{{ customer.created_at|date:"d M Y" }}</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Update Contact Info</span></div>
+    <div class="card-body">
+      {% if success %}<div class="alert alert-success">✓ {{ success }}</div>{% endif %}
+      {% if error %}<div class="alert alert-error">⚠ {{ error }}</div>{% endif %}
+      <form method="POST">
+        {% csrf_token %}
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="text" name="phone" class="form-input" value="{{ customer.phone }}" placeholder="Phone number" required>
+        </div>
+        <div class="field">
+          <label>Address</label>
+          <textarea name="address" class="form-input" rows="3" placeholder="Your residential address" style="resize:vertical">{{ customer.address }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

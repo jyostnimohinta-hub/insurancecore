@@ -1,0 +1,62 @@
+{% extends "insurance/base.html" %}
+{% block title %}Claims — InsureCore{% endblock %}
+{% block page_title %}Claims{% endblock %}
+
+{% block content %}
+<div class="page-actions">
+  <div class="page-actions-left">
+    <form method="GET" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div class="search-bar">
+        <span style="color:var(--text-4);font-size:14px">🔍</span>
+        <input type="text" name="q" value="{{ q }}" placeholder="Search claims...">
+        <input type="hidden" name="status" value="{{ status }}">
+      </div>
+      <div class="filter-pills">
+        <a href="{% url 'claims' %}" class="pill {% if not status %}active{% endif %}">All</a>
+        <a href="{% url 'claims' %}?status=pending" class="pill {% if status == 'pending' %}active{% endif %}">Pending</a>
+        <a href="{% url 'claims' %}?status=under_review" class="pill {% if status == 'under_review' %}active{% endif %}">Under Review</a>
+        <a href="{% url 'claims' %}?status=approved" class="pill {% if status == 'approved' %}active{% endif %}">Approved</a>
+        <a href="{% url 'claims' %}?status=rejected" class="pill {% if status == 'rejected' %}active{% endif %}">Rejected</a>
+        <a href="{% url 'claims' %}?status=settled" class="pill {% if status == 'settled' %}active{% endif %}">Settled</a>
+      </div>
+    </form>
+  </div>
+  <a href="{% url 'claim_add' %}" class="btn btn-primary">+ Submit Claim</a>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>Claim #</th><th>Customer</th><th>Policy</th><th>Claimed</th><th>Approved</th><th>Incident</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for c in claims %}
+        <tr>
+          <td><a href="{% url 'claim_detail' c.pk %}" class="mono" style="color:var(--blue);text-decoration:none">{{ c.claim_number }}</a></td>
+          <td><a href="{% url 'customer_detail' c.policy.customer.pk %}" style="color:var(--text);text-decoration:none;font-weight:500">{{ c.policy.customer.name }}</a></td>
+          <td class="mono">{{ c.policy.policy_number }}</td>
+          <td class="amount">₹{{ c.claim_amount|floatformat:0 }}</td>
+          <td class="amount">{% if c.approved_amount %}₹{{ c.approved_amount|floatformat:0 }}{% else %}<span style="color:var(--text-4)">—</span>{% endif %}</td>
+          <td>{{ c.incident_date }}</td>
+          <td><span class="badge badge-{{ c.status }}">{{ c.get_status_display }}</span></td>
+          <td>
+            <div style="display:flex;gap:6px">
+              <a href="{% url 'claim_detail' c.pk %}" class="btn btn-secondary btn-sm">Review</a>
+              <a href="{% url 'claim_delete' c.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">
+          <div class="empty">
+            <div class="empty-icon">📋</div>
+            <p>No claims found. <a href="{% url 'claim_add' %}" style="color:var(--blue)">Submit the first one</a>.</p>
+          </div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

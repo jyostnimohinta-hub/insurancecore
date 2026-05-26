@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — InsureCore</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--blue:#2563eb;--blue-dark:#1d4ed8;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+--border:#e5e7eb;--bg:#f7f8fa;--text:#111827;--text-2:#374151;--text-3:#6b7280;--text-4:#9ca3af;
+--red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+--white:#fff;--sans:'Plus Jakarta Sans',sans-serif;--radius:8px;--radius-lg:12px;
+}
+body{font-family:var(--sans);background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-container{width:100%;max-width:420px}
+.login-brand{text-align:center;margin-bottom:28px}
+.brand-icon{width:52px;height:52px;background:var(--blue);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:12px}
+.brand-name{font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
+.brand-tagline{font-size:13px;color:var(--text-3);margin-top:4px}
+.login-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;box-shadow:0 4px 6px -1px rgba(0,0,0,.07)}
+.card-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.card-sub{font-size:13px;color:var(--text-3);margin-bottom:24px}
+.admin-badge{display:inline-flex;align-items:center;gap:6px;background:#fef3c7;border:1px solid #fde68a;color:#92400e;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:20px}
+.field{margin-bottom:16px}
+label{display:block;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:var(--sans);color:var(--text);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+input::placeholder{color:var(--text-4)}
+.error-box{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);border-radius:var(--radius);padding:10px 12px;font-size:13px;margin-bottom:16px}
+.btn-login{width:100%;padding:12px;background:var(--blue);color:white;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;font-family:var(--sans);cursor:pointer;transition:background .15s;margin-top:4px}
+.btn-login:hover{background:var(--blue-dark)}
+.divider{display:flex;align-items:center;gap:10px;margin:20px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.divider span{font-size:12px;color:var(--text-4)}
+.customer-link{display:block;text-align:center;padding:11px;border:1px solid var(--blue-border);background:var(--blue-bg);border-radius:var(--radius);color:var(--blue);font-size:14px;font-weight:600;text-decoration:none;transition:all .15s}
+.customer-link:hover{background:#dbeafe}
+</style>
+</head>
+<body>
+<div class="login-container">
+  <div class="login-brand">
+    <div class="brand-icon">🛡</div>
+    <div class="brand-name">InsureCore</div>
+    <div class="brand-tagline">Insurance Management System</div>
+  </div>
+
+  <div class="login-card">
+    <div class="card-title">Admin Login</div>
+    <div class="card-sub">Sign in to the administration panel</div>
+
+    <div class="admin-badge">🔐 Admin Access Only</div>
+
+    {% if error %}
+    <div class="error-box">⚠ {{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Admin username" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Admin password" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-login">Sign In to Admin Panel →</button>
+    </form>
+
+    <div class="divider"><span>Are you a customer?</span></div>
+
+    <a href="/portal/login/" class="customer-link">
+      👤 Go to Customer Portal →
+    </a>
+  </div>
+</div>
+</body>
+</html>
